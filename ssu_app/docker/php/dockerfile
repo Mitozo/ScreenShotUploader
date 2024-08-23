@@ -1,0 +1,36 @@
+FROM php:8.3-fpm
+
+RUN sed -i 's|http://|https://|g' /etc/apt/sources.list.d/debian.sources
+RUN apt-get update \
+   && apt-get install -y git \
+        git \
+        wget \
+        unzip \
+        libicu-dev \
+        libzip-dev \
+        libldap2-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-configure zip
+# Install required PHP extensions
+RUN docker-php-ext-install \
+        intl \
+        opcache \
+        zip
+
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \ 
+    && apt install symfony-cli
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+        && mkdir -p /var/www/.composer \
+        && chown www-data:www-data /var/www/.composer
+
+EXPOSE 80
+
+# Install project files
+WORKDIR /var/www/html/
+# COPY --chown=www-data docker-entrypoint.sh /var/www/html/
+COPY --chown=www-data . /var/www/html/
+
+# RUN chmod u+x docker-entrypoint.sh
+# ENTRYPOINT ["/var/www/html/docker-entrypoint.sh"]
