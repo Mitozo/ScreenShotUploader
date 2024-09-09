@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UploaderController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="container pt-4">
+<div class="example-wrapper p-4">
+    <form action="" class="form">
+    <div class="row">
+      <div class="col-3 text-center pt-4" style="background-color: rgb(102, 212, 81)">
+        Screen shot
+      </div>
+      <div class="col-9">
+        <div id="pasteArea" class="form-control" value="" contenteditable="true" name="Screenshot" style="width: 100%; height: 200px; border: 1px solid #ccc;"></div>
+      </div>
+      <input id="base_url" type="hidden" value="/public/upload">
+      <input id="filename" type="hidden" value="public/upload/">
+      <input id="formId" type="hidden" name="formId" value="Form_<?= time() ?>">
+      <input id="tagertedDir" type="hidden" name="tagertedDir" value="/Backend/Upload/">
+    </div>
+  </form>
+</div>
+</div>
+
+{% block javascripts %}
+    <script type="text/javascript" src="{{ asset('assets/js/screenshot.js') }}"></script>
+{% endblock %}
+{% endblock %}
