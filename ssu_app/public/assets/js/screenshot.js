@@ -61,6 +61,7 @@ function submitFileForm(file, type, hiddenfileid) {
     let filename = document.getElementById('filename').value
     let elementDir = document.getElementById('elementDir').value
     let elementNumber = document.getElementById('elementNumber').value
+    formData.append('_csrf_token', document.querySelector('[name="_csrf_token"]').value);
     formData.append('filename', filename)
     formData.append('elementDir', elementDir)
     formData.append('elementNumber', elementNumber)
@@ -72,7 +73,7 @@ function submitFileForm(file, type, hiddenfileid) {
 
     var xhr = new XMLHttpRequest()
     xhr.open('POST', uploaderPath + '/doUpload', true)
-    // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.onload = function () {
         if (xhr.status == 200) {
             response = JSON.parse(xhr.responseText)
@@ -83,6 +84,7 @@ function submitFileForm(file, type, hiddenfileid) {
             xhiddenfileid.value = imageName
         } else {
             console.log('Nope')
+            console.error('Error:' + xhr.status + '=====>' + xhr.statusText);
         }
     }
     xhr.send(formData)

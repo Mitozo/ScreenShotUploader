@@ -37,6 +37,7 @@
 					<input id="elementNumber" type="hidden" value="{{ random(50, 100) }}">
 					<input id="formId" type="hidden" name="formId" value="Form_{{ date().timestamp }}">
 					<input id="uploaderPath" type="hidden" name="uploaderPath" value="{{ path('uploader') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token('upload_image') }}">
 				</div>
 			</form>
 		</div>
