@@ -9,9 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (item.kind === 'file') {
                 var imageFile = item.getAsFile()
                 var reader = new FileReader()
-                let i = 0;
                 reader.onload = function (event) {
-                    console.log('looped image => ' + i++)
                     event.preventDefault()
                     const imgWrapper = document.createElement('div')
                     imgWrapper.classList.add('image-wrapper')
@@ -68,12 +66,13 @@ function submitFileForm(file, type, hiddenfileid) {
     formData.append('elementNumber', elementNumber)
 
     let myBlob = new Blob([file], { "type": "image/png" })
-    formData.append('file', myBlob, elementDir + '-' + elementNumber + '.png')
+    formData.append('file', myBlob, elementDir + filename +'-file-' + elementNumber + '.png')
 
     let uploaderPath = document.getElementById('uploaderPath').value
 
     var xhr = new XMLHttpRequest()
     xhr.open('POST', uploaderPath + '/doUpload', true)
+    // xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.onload = function () {
         if (xhr.status == 200) {
             response = JSON.parse(xhr.responseText)

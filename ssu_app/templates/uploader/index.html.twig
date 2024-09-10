@@ -32,11 +32,10 @@
 					<div class="col-9">
 						<div id="pasteArea" class="form-control" value="" contenteditable="true" name="Screenshot" style="width: 100%; height: 200px; border: 1px solid #ccc;"></div>
 					</div>
-					<input id="filename" type="hidden" value="public/upload/">
-					<input id="elementDir" type="hidden" value="public/upload/elementdir">
+					<input id="filename" type="hidden" value="screenShot">
+					<input id="elementDir" type="hidden" value="elementdir/">
 					<input id="elementNumber" type="hidden" value="{{ random(50, 100) }}">
 					<input id="formId" type="hidden" name="formId" value="Form_{{ date().timestamp }}">
-					<input id="tagertedDir" type="hidden" name="tagertedDir" value="/Backend/Upload/">
 					<input id="uploaderPath" type="hidden" name="uploaderPath" value="{{ path('uploader') }}">
 				</div>
 			</form>
