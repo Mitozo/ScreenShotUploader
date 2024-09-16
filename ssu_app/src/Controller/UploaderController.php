@@ -4,12 +4,11 @@ namespace App\Controller;
 
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Csrf\CsrfToken;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class UploaderController extends AbstractController
 {
@@ -28,12 +27,16 @@ class UploaderController extends AbstractController
     #[Route('/uploader/list', name: 'uploader.image.list')]
     public function imageList(): Response
     {
+        $uploadPath = $this->getParameter('file_upload_directory');
+        $fileSystem = new Filesystem();
+        $files = $fileSystem->readlink($uploadPath);
+        dd($files);
         return new JsonResponse(['data' => 'list of images'], 200);
     }
 
 
     #[Route('/uploader/doUpload', name: 'uploader.imageClipboard')]
-    public function doUpload(Request $request, CsrfTokenManagerInterface $csrfTokenManager): Response
+    public function doUpload(Request $request): Response
     {
         $token = 'upload_image';
         if (!$this->isCsrfTokenValid($token, $request->request->get('_csrf_token'))) {
@@ -47,11 +50,11 @@ class UploaderController extends AbstractController
         
         try {
             if (!move_uploaded_file($_FILES['file']['tmp_name'], $directoryName)) {
-                return new JsonResponse(['data' => ['error' => "An error occured when uploading the file", 'class' => "danger"]],  400);
+                return new JsonResponse(['data' => ['msg' => "An error occured when uploading the file", 'class' => "text-danger"]],  400);
             }
-            return new JsonResponse(['data' => ['success' => "File successfully uploaded", 'class' => "success"]],  200);
+            return new JsonResponse(['data' => ['msg' => "File successfully uploaded", 'class' => "text-success"]],  200);
         } catch (Exception $ex) {
-            return new JsonResponse(['data' => ['Exception' => $ex->getMessage(), 'class' => "success"]],  401);
+            return new JsonResponse(['data' => ['msg' => $ex->getMessage(), 'class' => "text-warning"]],  401);
         }
     }
 

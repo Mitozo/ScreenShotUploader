@@ -75,16 +75,20 @@ function submitFileForm(file, type, hiddenfileid) {
     xhr.open('POST', uploaderPath + '/doUpload', true)
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.onload = function () {
+        msgElement = document.getElementById('msg')
         if (xhr.status == 200) {
             response = JSON.parse(xhr.responseText)
-            console.log("response")
-            console.log(response)
+            msgElement.innerText = response.data.msg
+            msgElement.classList.add(response.data.class)
             imageName = response.data.uploaded_file
             const xhiddenfileid = document.getElementById(hiddenfileid)
             xhiddenfileid.value = imageName
-        } else {
-            console.log('Nope')
-            console.error('Error:' + xhr.status + '=====>' + xhr.statusText);
+        } else if (xhr.status == 500) {
+            msgElement.innerText = response.data.msg
+            msgElement.classList.add(response.data.class)
+        } else  if (xhr.status == 401) {
+            msgElement.innerText = response.data.msg
+            msgElement.classList.add(response.data.class)
         }
     }
     xhr.send(formData)
