@@ -21,7 +21,14 @@ class UploaderController extends AbstractController
         ]);
     }
 
-    #[Route('/uploader/doUpload', name: 'upload.imageClipboard')]
+    #[Route('/uploader/list', name: 'uploader.image.list')]
+    public function imageList(): Response
+    {
+        return new JsonResponse(['data' => 'list of images'], 200);
+    }
+
+
+    #[Route('/uploader/doUpload', name: 'uploader.imageClipboard')]
     public function doUpload(Request $request, CsrfTokenManagerInterface $csrfTokenManager): Response
     {
         $token = 'upload_image';
