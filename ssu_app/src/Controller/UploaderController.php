@@ -46,6 +46,12 @@ class UploaderController extends AbstractController
                 ]
             ], 200);
         }
+
+        $fileSystem = new Filesystem();
+        if (!$fileSystem->exists($this->getParameter(('file_upload_directory')))) {
+            $fileSystem->mkdir($this->getParameter('file_upload_directory'), 0755);
+        }
+        
         $directoryName =  $this->getParameter('file_upload_directory') . $_FILES['file']['name'];
         
         try {
