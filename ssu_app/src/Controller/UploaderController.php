@@ -5,6 +5,7 @@ namespace App\Controller;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,10 +29,15 @@ class UploaderController extends AbstractController
     public function imageList(): Response
     {
         $uploadPath = $this->getParameter('file_upload_directory');
-        $fileSystem = new Filesystem();
-        $files = $fileSystem->readlink($uploadPath);
-        dd($files);
-        return new JsonResponse(['data' => 'list of images'], 200);
+        $finder = new Finder();
+        $finder->files()->in($uploadPath);
+        $filesInDir = [];
+        foreach ($finder as $file) {
+            $fileNameWithExtension = $file->getRelativePathname();
+            $filesInDir[] = $fileNameWithExtension;
+        }
+        $uploadPath = 'uploader';
+        return $this->render('uploader/list_uploaded_img.html.twig', compact('filesInDir', 'uploadPath'));
     }
 
 
@@ -51,7 +57,7 @@ class UploaderController extends AbstractController
         if (!$fileSystem->exists($this->getParameter(('file_upload_directory')))) {
             $fileSystem->mkdir($this->getParameter('file_upload_directory'), 0755);
         }
-        
+
         $directoryName =  $this->getParameter('file_upload_directory') . $_FILES['file']['name'];
         
         try {
