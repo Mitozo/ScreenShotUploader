@@ -16,8 +16,12 @@ class UploaderController extends AbstractController
     #[Route('/uploader', name: 'uploader')]
     public function index(): Response
     {
+        $list_of_uploaded_image = $this->generateUrl('uploader.image.list');
+        $landing_page = $this->generateUrl('uploader');
         return $this->render('uploader/index.html.twig', [
             'controller_name' => 'UploaderController',
+            'list_of_uploaded_image' => $list_of_uploaded_image,
+            'landing_page' => $landing_page,
         ]);
     }
 
