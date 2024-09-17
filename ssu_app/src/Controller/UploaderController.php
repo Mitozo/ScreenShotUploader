@@ -29,6 +29,7 @@ class UploaderController extends AbstractController
     public function imageList(): Response
     {
         $uploadPath = $this->getParameter('file_upload_directory');
+        $pathToUploadForm = $this->generateUrl('uploader');
         $finder = new Finder();
         $finder->files()->in($uploadPath);
         $filesInDir = [];
@@ -37,7 +38,7 @@ class UploaderController extends AbstractController
             $filesInDir[] = $fileNameWithExtension;
         }
         $uploadPath = 'uploader';
-        return $this->render('uploader/list_uploaded_img.html.twig', compact('filesInDir', 'uploadPath'));
+        return $this->render('uploader/list_uploaded_img.html.twig', compact('filesInDir', 'pathToUploadForm'));
     }
 
 
