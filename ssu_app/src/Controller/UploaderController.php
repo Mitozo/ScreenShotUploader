@@ -58,7 +58,6 @@ class UploaderController extends AbstractController
         if (!$fileSystem->exists($this->getParameter(('file_upload_directory')))) {
             $fileSystem->mkdir($this->getParameter('file_upload_directory'), 0755);
         }
-        $files = $request->files->get('file');
         $directoryName =  $this->getParameter('file_upload_directory') . $_FILES['file']['name'];
         
         try {
@@ -74,6 +73,11 @@ class UploaderController extends AbstractController
     #[Route('/uploader/removeFile', name: 'remove.imageClipboard')]
     public function removeFile(Request $request): Response
     {
-        return new JsonResponse(['data' => ['clipboardFile' => $request]]);
+        $directoryName =  $this->getParameter('file_upload_directory') . $request->request->get('filename') . '.png';
+        if (unlink($directoryName)) {
+            return new JsonResponse(['data' => ['msg' => "File successfully removed", "class" => "text-warning"]], 200);
+        } else {
+            return new JsonResponse(['data' => ['msg' => "An error occured when removing the image file, maybe the file doesn't exist", "class" => "text-dangerg"]], 500);
+        }
     }
 }

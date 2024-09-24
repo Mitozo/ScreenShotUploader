@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const filenameOnsrv = document.createElement('input')
                         filenameOnsrv.setAttribute('type', 'hidden')
                         filenameOnsrv.setAttribute('id', hiddenfileid)
+                        filenameOnsrv.setAttribute('name', hiddenfileid)
+                        filenameOnsrv.value = hiddenfileid
                         removeBtn.innerText = 'X'
                         removeBtn.setAttribute('id', 'btn_' + hiddenfileid)
                         removeBtn.classList.add('remove-btn')
@@ -62,16 +64,12 @@ function createNewIdFileName(filename) {
 function submitFileForm(file, type, hiddenfileid) {
     let formData = new FormData()
     formData.append('submission-type', type)
-    let filename = document.getElementById('filename').value
-    let elementDir = document.getElementById('elementDir').value
-    let elementNumber = document.getElementById('elementNumber').value
+    let filename = hiddenfileid
     formData.append('_csrf_token', document.querySelector('[name="_csrf_token"]').value);
     formData.append('filename', filename)
-    formData.append('elementDir', elementDir)
-    formData.append('elementNumber', elementNumber)
 
     let myBlob = new Blob([file], { "type": "image/png" })
-    formData.append('file', myBlob, elementDir + filename + '-file-' + elementNumber + '.png')
+    formData.append('file', myBlob, filename + '.png')
 
     let uploaderPath = document.getElementById('uploaderPath').value
 
@@ -80,19 +78,13 @@ function submitFileForm(file, type, hiddenfileid) {
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
     xhr.onload = function () {
         msgElement = document.getElementById('msg')
+        response = JSON.parse(xhr.responseText)
         if (xhr.status == 200) {
-            response = JSON.parse(xhr.responseText)
-            msgElement.innerText = response.data.msg
-            msgElement.classList.add(response.data.class)
-            imageName = response.data.uploaded_file
-            const xhiddenfileid = document.getElementById(hiddenfileid)
-            xhiddenfileid.value = imageName
+            displayResponse(msgElement, response.data.msg, response.data.class)
         } else if (xhr.status == 500) {
-            msgElement.innerText = response.data.msg
-            msgElement.classList.add(response.data.class)
+            displayResponse(msgElement, response.data.msg, response.data.class)
         } else if (xhr.status == 401) {
-            msgElement.innerText = response.data.msg
-            msgElement.classList.add(response.data.class)
+            displayResponse(msgElement, response.data.msg, response.data.class)
         }
     }
     xhr.send(formData)
@@ -101,21 +93,23 @@ function submitFileForm(file, type, hiddenfileid) {
 function removeFile(hiddenFilename) {
     let uploaderPath = document.getElementById('uploaderPath').value
     let formData = new FormData()
-    let filename = document.getElementById('filename').value
-    let elementDir = document.getElementById('elementDir').value
-    formData.append('filename', filename)
-    formData.append('elementDir', elementDir)
-    formData.append('hiddenFilename', hiddenFilename)
-
+    formData.append('filename', hiddenFilename)
+    
     var xhr = new XMLHttpRequest()
     xhr.open('POST', uploaderPath + '/removeFile', true)
     xhr.onload = function () {
+        msgElement = document.getElementById('msg')
+        response = JSON.parse(xhr.responseText)
         if (xhr.status == 200) {
-            console.log('remove: ')
-            console.log(JSON.parse(xhr.responseText))
+            displayResponse(msgElement, response.data.msg, response.data.class)
         } else {
-            console.log('Nope')
+            displayResponse(msgElement, response.data.msg, response.data.class)
         }
     }
     xhr.send(formData)
+}
+
+function displayResponse(elm, m, c) {
+    elm.innerText = m
+    elm.classList.add(c)
 }

@@ -32,9 +32,6 @@
 					<div class="col-12">
 						<p><a href="{{ landing_page }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Back to landing page</a></p>
 					</div>
-					<input id="filename" type="hidden" value="screenShot">
-					<input id="elementDir" type="hidden" value="elementdir/">
-					<input id="elementNumber" type="hidden" value="{{ random(50, 100) }}">
 					<input id="formId" type="hidden" name="formId" value="Form_{{ date().timestamp }}">
 					<input id="uploaderPath" type="hidden" name="uploaderPath" value="{{ path('uploader') }}">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token('upload_image') }}">
