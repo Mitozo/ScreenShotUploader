@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use ErrorException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
@@ -9,6 +10,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 class UploaderController extends AbstractController
@@ -48,8 +50,9 @@ class UploaderController extends AbstractController
         $token = 'upload_image';
         if (!$this->isCsrfTokenValid($token, $request->request->get('_csrf_token'))) {
             return new JsonResponse([
-                'data' => ['error' => 'Invalid CSRF token',
-                'class' => 'danger'
+                'data' => [
+                    'error' => 'Invalid CSRF token',
+                    'class' => 'danger'
                 ]
             ], 200);
         }
@@ -59,7 +62,7 @@ class UploaderController extends AbstractController
             $fileSystem->mkdir($this->getParameter('file_upload_directory'), 0755);
         }
         $directoryName =  $this->getParameter('file_upload_directory') . $_FILES['file']['name'];
-        
+
         try {
             if (!move_uploaded_file($_FILES['file']['tmp_name'], $directoryName)) {
                 return new JsonResponse(['data' => ['msg' => "An error occured when uploading the file", 'class' => "text-danger"]],  400);
@@ -71,13 +74,23 @@ class UploaderController extends AbstractController
     }
 
     #[Route('/uploader/removeFile', name: 'remove.imageClipboard')]
-    public function removeFile(Request $request): Response
+    public function removeFile(Request $request, SessionInterface $session): Response
     {
-        $directoryName =  $this->getParameter('file_upload_directory') . $request->request->get('filename') . '.png';
-        if (unlink($directoryName)) {
-            return new JsonResponse(['data' => ['msg' => "File successfully removed", "class" => "text-warning"]], 200);
-        } else {
-            return new JsonResponse(['data' => ['msg' => "An error occured when removing the image file, maybe the file doesn't exist", "class" => "text-dangerg"]], 500);
+        try {
+            $filename = $request->request->get('filename');
+            $directoryName = strpos($filename, '.png')
+                ? $this->getParameter('file_upload_directory')  .  $filename
+                : $this->getParameter('file_upload_directory') . $filename . '.png';
+            if (!$session->has($filename)) {
+                $session->set($filename, 1);
+                if (unlink($directoryName)) {
+                    return new JsonResponse(['data' => ['msg' => "File successfully removed", "class" => "text-warning"]], 200);
+                }
+            } else {
+                return new JsonResponse(['data' => ['msg' => "An error occured when removing the image file, maybe the file doesn't exist"  . $session->get($filename), "class" => "text-dangerg"]], 500);
+            }
+        } catch (ErrorException $e) {
+            return new JsonResponse(['data' => ['msg' => "An error occured when removing the image file, maybe the file doesn't exist [" . $e->getMessage() . "]", "class" => "text-dangerg"]], 500);
         }
     }
 }
