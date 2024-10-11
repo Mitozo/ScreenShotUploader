@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UploaderController!
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('assets/css/clipboardImageStyle.css') }}" >
+<link rel="stylesheet" href="{{ asset('assets/css/formStyle.css') }}" >
+{% endblock %}
+
+{% block body %}
+
+	<main>
+		<div class="container">
+			<div class="album py-5 bg-body-tertiary">
+					<div class="col-12 d-flex justify-content-between align-items-center">
+						<h1 class="mb-4">List of uploaded images</h1>
+            <a href="{{ pathToUploadForm }}" class="link-body-emphasis link-offset-2 link-underline-opacity-25 link-underline-opacity-75-hover">Back to upload form</a>
+					</div>
+					{% include "msg.html.twig" %}
+					<div class="col-12">
+            <div class="row row-cols-4 row-cols-sm-4 row-cols-md-4 g-3">
+						{% for key,value in filesInDir %}
+							<div class="card shadow-sm m-1">
+								<h5 class="text-dark pt-2">{{ value }}</h5>
+								<img src="{{ asset('upload/' ~ value) }}" class="img-fluid img-thumbnail mt-2" style="width: 100%; height: 80%" alt="{{ value }}"/>
+								<div class="card-body">
+									<p class="card-text">This is a file uploaded via XmlHttpRequest</p>
+									<div class="d-flex justify-content-between align-items-center">
+										<small class="text-body-secondary">uploaded file</small>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+						<input id="uploaderPath" type="hidden" name="uploaderPath" value="{{ path('uploader') }}">
+					</div>
+          </div>
+				</div>
+		</div>
+	</main>
+{% block javascripts %}
+    {{ parent() }}
+		<script type="text/javascript" src="{{ asset('assets/js/main.js?v=' ~ date().timestamp) }}"></script>
+		<script type="text/javascript" src="{{ asset('assets/js/screenshot-list.js?v=' ~ date().timestamp) }}"></script>
+	{% endblock %}
+{% endblock %}
